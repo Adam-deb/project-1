@@ -39,12 +39,16 @@
   <div class="jumbotron">
     <hr class="my-4">
 
-    <div id ="surroundBox"> 
+    <div id="surroundBox">
       <h1> Where would you like to go? </h1>
-      <input type="text" id ="searchBox">
-
-      <a class="btn btn-primary btn-lg" href="#" role="button" id="searchBtn">Search</a>
-    
+      <div id="searchItems" class="row justify-content-center">
+        <div class="col-auto">
+          <input type="text" class="form-control" id="searchBox" placeholder="Enter a city">
+        </div>
+        <div class="col-auto">
+          <button type="button" class="btn btn-primary btn-lg" id="searchBtn">Search</button>
+        </div>
+      </div>
     </div>
   </div>
   <script src="./assets/script/script.js"> </script>
