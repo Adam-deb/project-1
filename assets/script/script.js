@@ -9,7 +9,7 @@ var searchButton = document.getElementById('searchBtn');
 var searchLoadingSpinnerContainer = document.getElementById('hotel-search-loading-spinner-container');
 var mapContainer = document.getElementById('map-container');
 
-var apiKey = '494e568795mshdacbfaf47fa8edep12317cjsn74147600f8bb';
+var apiKey = '37a742acecmshb1d0cea778ef597p1c03a8jsn8195f29d98b6';
 var apiHost = 'hotels-com-provider.p.rapidapi.com';
 
 var numberOfHotelsToDisplay = 8;
