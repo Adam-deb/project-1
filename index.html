@@ -114,6 +114,50 @@
     <div id="map"></div>
   </div>
 
+  <!-- Modal -->
+  <div class="modal" id="myModal">
+    <div class="modal-dialog modal-fullscreen">
+      <div class="modal-content">
+  
+        <!-- Modal Header -->
+        <div class="modal-header">
+          <h4 class="modal-title">Here are some points of interest near the hotel</h4>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+  
+        <!-- Modal body -->
+        <div class="modal-body">
+          <div class="container text-center">
+              <div class="row">
+                <div class="col">
+                  <div>
+                    <!-- API outputs -->
+                    <h5>Restaurants🍴😋</h4>
+                      <ul class="list-group" id="restaurants"></ul>
+                    <h5>Bars and Pubs 🍸🍻</h4>
+                      <ul class="list-group" id="bars_pubs"></ul>
+                    <h5>Entertainment 🎉🎭</h4>
+                      <ul class="list-group" id="entertainment"></ul>
+                    <h5>Culture 🖼️🏛️</h4>
+                      <ul class="list-group" id="culture"></ul>
+                  </div>
+                </div>
+                <div class="col">
+                  <div id="googleMap" style="height: 400px;"></div>
+                </div>
+              </div>
+            </div>
+        </div>
+  
+        <!-- Modal footer -->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+        </div>
+  
+      </div>
+    </div>
+  </div>
+
   <!-- Footer Start -->
   <footer class="container-fluid footer">
     <div class="row">
@@ -187,6 +231,13 @@
   </footer>
   <!-- Footer End -->
 
+  <!-- Google API Script -->
+  <script>
+    (g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await (a=m.createElement("script"));e.set("libraries",[...r]+"");for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);e.set("callback",c+".maps."+q);a.src=`https://maps.${c}apis.com/maps/api/js?`+e;d[q]=f;a.onerror=()=>h=n(Error(p+" could not load."));a.nonce=m.querySelector("script[nonce]")?.nonce||"";m.head.append(a)}));d[l]?console.warn(p+" only loads once. Ignoring:",g):d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n))})({
+      key: "AIzaSyBJNC4LwGW7sqqe3MY_8oIwhb4qy-A1viQ",
+      v: "weekly",
+    });
+  </script>
 
   <!-- Popper.js, Bootstrap JS, Font Awesome -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>

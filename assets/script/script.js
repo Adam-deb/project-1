@@ -9,7 +9,7 @@ var searchButton = document.getElementById('searchBtn');
 var searchLoadingSpinnerContainer = document.getElementById('hotel-search-loading-spinner-container');
 var mapContainer = document.getElementById('map-container');
 
-var apiKey = '494e568795mshdacbfaf47fa8edep12317cjsn74147600f8bb';
+var apiKey = '37a742acecmshb1d0cea778ef597p1c03a8jsn8195f29d98b6';
 var apiHost = 'hotels-com-provider.p.rapidapi.com';
 
 var numberOfHotelsToDisplay = 8;
@@ -233,6 +233,199 @@ function addHotelsToLocalStorage(regionId, hotels, options) {
   console.log(`Saved hotels for Region ID: ${regionId} with options: ${JSON.stringify(options)} to local storage.`)
 }
 
+//Modal Functions ------------------------------------------
+
+//Function to convert OpenTripMap API output coordinates for google maps
+function convertLonLat(OpenTripMapCoordinateInput) {
+  var latitude = OpenTripMapCoordinateInput.lat;
+  var longitude = OpenTripMapCoordinateInput.lon;
+
+  var outputForGoogleMaps = {
+      lat: latitude,
+      lng: longitude
+  };
+
+  return outputForGoogleMaps;
+};
+
+//--> Initializing variables collecting coordinates of nearby attractions
+var restaurantArray = [];
+var barArray = [];
+var entertainmentArray = [];
+var cultureArray = [];
+
+
+
+//--> Inputs for "kinds" Parameter for /{lang}/places/radius endpoint 
+const cafeRest = "cafes,restaurants";
+const barPub = "bars,pubs";
+const entertainment = "amusements,sport,casino,theatres_and_entertainments";
+const culture = "museums,historic_architecture,towers,historical_places,monuments_and_memorials";
+
+//--> static inputs for /{lang}/places/radius endpoint 
+const radius = "10000";
+const listLimit = "2";
+const minPopularity = "1";
+const OpenTripApiKey = "5ae2e3f221c38a28845f05b600eb874f334b70babd7547a89821c944";
+
+
+//--> Function to call API for a given category
+async function fetchData(category, longitude, latitude,){
+  const queryURL = `https://api.opentripmap.com/0.1/en/places/radius?radius=${radius}&lon=${longitude}&lat=${latitude}&kinds=${category}&rate=${minPopularity}&format=json&limit=${listLimit}&apikey=${OpenTripApiKey}`;
+  return fetch(queryURL)
+      .then(function(response) {
+          return response.json()
+      })
+      .then(function(data) {
+          //--> for loop iterates through all locations in the response, pushes converted coordinates to respective arrays, and adds new elements to display location names
+          for(var location = 0; location < listLimit; location++) {
+      
+              //--> Switch pushes the coordinates of locations from response to correct array
+              switch(category) {
+                  case cafeRest:
+                      restaurantArray.push({
+                          position: convertLonLat(data[location].point),
+                          title: data[location].name,
+                      })
+                          $("#restaurants").append(`<li class="list-group-item">${data[location].name}<span id="locationDistance">   ${Math.round(data[location].dist)}m</span></li>`);
+                      break;
+                  case barPub:
+                      barArray.push({
+                          position: convertLonLat(data[location].point),
+                          title: data[location].name,
+                      })
+                      $("#bars_pubs").append(`<li class="list-group-item">${data[location].name}<span id="locationDistance">   ${Math.round(data[location].dist)}m</span></li>`);
+                      break;
+                  case entertainment:
+                      entertainmentArray.push({
+                          position: convertLonLat(data[location].point),
+                          title: data[location].name,
+                      })
+                      $("#entertainment").append(`<li class="list-group-item">${data[location].name}<span id="locationDistance">   ${Math.round(data[location].dist)}m</span></li>`);
+                      break;
+                  case culture:
+                      cultureArray.push({
+                          position: convertLonLat(data[location].point),
+                          title: data[location].name,
+                      })
+                      $("#culture").append(`<li class="list-group-item">${data[location].name}<span id="locationDistance">   ${Math.round(data[location].dist)}m</span></li>`);
+                      break;
+
+              }
+          }
+      })
+}
+
+//Google Maps Initialization function
+async function initMap(hotelName, hotelLocation, listLimit) {
+  const { Map, InfoWindow } = await google.maps.importLibrary("maps");
+  const { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary(
+  "marker",
+  );
+  const map = new Map(document.getElementById("googleMap"), {
+      zoom: 16,
+      center: hotelLocation,
+      mapId: "4504f8b37365c3d0",
+  });
+
+//--> Creates an info window to share between markers.
+  const infoWindow = new InfoWindow();
+  
+//-->Creates a hotel marker and makes it bigger than default
+  const hotelMarker = new PinElement({
+      scale: 1.3,
+  });
+  
+  const markerViewScaled = new AdvancedMarkerElement({
+      map,
+      position: hotelLocation,
+      content: hotelMarker.element,
+      title: hotelName
+  });
+  
+//--> for loop iterates through categories arrays and creates a marker with a designated custom design
+  for(i = 0; i < listLimit; i++){
+
+//----> Restaurant 
+      const restaurantImg = document.createElement("img");
+      restaurantImg.src = "./assets/images/restaurant_googleMaps_Icon.png";
+
+      const restaurantImgView = new AdvancedMarkerElement({
+          map,
+          position: restaurantArray[i].position,
+          content: restaurantImg,
+          title: restaurantArray[i].title,
+      });
+  
+//----> Bars
+      const barImg = document.createElement("img");
+      barImg.src = "./assets/images/Bar_GoogleMaps_Icon.png";
+
+      const barImgView = new AdvancedMarkerElement({
+          map,
+          position: barArray[i].position,
+          content: barImg,
+          title: restaurantArray[i].title,
+      });
+  
+//----> Entertainment
+      const entertainmentImg = document.createElement("img");
+      entertainmentImg.src = "./assets/images/entertainment_GoogleMaps_Icon.png";
+      
+      const entertainmentImgView = new AdvancedMarkerElement({
+          map,
+          position: entertainmentArray[i].position,
+          content: entertainmentImg,
+          title: entertainmentArray[i].title,
+      });
+
+//----> Culture
+      const cultureImg = document.createElement("img");
+      cultureImg.src = "./assets/images/culture_GoogleMaps_Icon.png";
+      
+      const cultureImgView = new AdvancedMarkerElement({
+          map,
+          position: cultureArray[i].position,
+          content: cultureImg,
+          title: cultureArray[i].title,
+      });
+
+//--> Adding a click listener for every marker
+  restaurantImgView.addListener("click", createClickListener(restaurantArray[i], restaurantImgView));
+  barImgView.addListener("click", createClickListener(barArray[i], barImgView));
+  entertainmentImgView.addListener("click", createClickListener(entertainmentArray[i], entertainmentImgView));
+  cultureImgView.addListener("click", createClickListener(cultureArray[i], cultureImgView));
+  markerViewScaled.addListener("click", createClickListener(markerViewScaled ,markerViewScaled));
+  }
+
+//--> Closes any existing info window, sets the content of a new info window, and opens the info window at the position of the clicked marker on the map.
+  function createClickListener(location, markerView) {
+      return ({ domEvent, latLng }) => {
+          const { target } = domEvent;
+
+      infoWindow.close();
+      infoWindow.setContent(location.title);
+      infoWindow.open(markerView.map, markerView);
+      };
+  }
+}
+
+// Added event listener to clear arrays when modal is closed
+$("#myModal").on("hidden.bs.modal", function () {
+  // Clear arrays here
+  restaurantArray = [];
+  barArray = [];
+  entertainmentArray = [];
+  cultureArray = [];
+  $("#restaurants").empty();
+  $("#bars_pubs").empty();
+  $("#entertainment").empty();
+  $("#culture").empty();
+  console.log(restaurantArray);
+});
+
+//Modal functions end ------------------------------------------------------
+
 function renderHotels(regionName, hotels, numberOfHotelsToDisplay) {
   emptyHotelContainers();
 
@@ -243,11 +436,39 @@ function renderHotels(regionName, hotels, numberOfHotelsToDisplay) {
     var hotelCard = createHotelCard(hotels[i]);
 
     $(hotelsBodyContainer).append(hotelCard);
-  }
-}
+
+    //Attached hotelData to card Element
+    $(hotelCard).data("hotelDetails", {
+      longitude: hotels[i].mapMarker.latLong.longitude,
+      latitude: hotels[i].mapMarker.latLong.latitude,
+      name: hotels[i].name
+    });
+  };
+
+//Added event listeners to triger bootstrap modal when hotel card is clicked 
+$(".hotelCards").click(function() {
+  $("#myModal").modal("show");
+  
+  var hotelDetails = $(this).data("hotelDetails");
+  console.log("----------------\nHotel details of clicked hotel:")
+  console.log(hotelDetails)
+
+  //Executing all fetchData functions simultaneously
+  Promise.all([
+    fetchData(cafeRest,hotelDetails.longitude, hotelDetails.latitude,), 
+    fetchData(barPub,hotelDetails.longitude, hotelDetails.latitude,),
+    fetchData(entertainment,hotelDetails.longitude, hotelDetails.latitude,),
+    fetchData(culture,hotelDetails.longitude, hotelDetails.latitude,),
+  ]) 
+    //Once the functions are successfully executed, the map is initialized
+    .then(() => {
+        initMap(hotelDetails.name, { lat: hotelDetails.latitude, lng: hotelDetails.longitude }, listLimit);
+    });
+  });
+};
 
 function createHotelCard(hotel) {
-  var hotelContainer = $("<div>").addClass("box");
+  var hotelContainer = $("<div>").addClass("box hotelCards");
 
   var hotelTitle = $("<h5>");
   hotelTitle.append(hotel.name);
