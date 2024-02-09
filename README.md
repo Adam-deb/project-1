@@ -77,6 +77,7 @@ Thank you to all collaborators on this Project
 - Map (below hotel cards): [LeafletJS API](https://leafletjs.com)
 - Modal Nearby Locations: [OpenTripMap API](https://dev.opentripmap.org/docs)
 - Modal Map: [Google Maps API](https://developers.google.com/maps/documentation/javascript)
+- Local Storage: [localStorage](https://developer.mozilla.org/en-US/docs/Web/API/Storage)
 
 ### Libraries Used
 - [Bootstrap](https://getbootstrap.com/)
