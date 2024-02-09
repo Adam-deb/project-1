@@ -33,6 +33,8 @@ var hotelMapMarkers = {};
 
 var numberOfHotelsToDisplayPerPage = 7;
 
+var currentSearchLocation = undefined;
+
 var map;
 var modalMap;
 var mapContainer;
@@ -133,23 +135,30 @@ function saveObjectToLocalStorage(key, data) {
 async function searchLocationForHotels(options = {}, overrideLocation) {
   // if script is already processing a previous request, prevent a new request from being processed
   if (loading === true) {
+    console.log('Currently loading. New search attempt was rejected.');
     return;
-  } apiOptions.headers['X-RapidAPI-Key'] = '37a742acecmshb1d0cea778ef597p1c03a8jsn8195f29d98b6'
+  }
 
   if (overrideLocation !== undefined) {
     hotelSearchBox.value = overrideLocation;
   }
 
-  try {
-    var locationName = hotelSearchBox.value;
+  console.log(options)
 
+  if (currentSearchLocation === undefined || options.searchType === 'search') {
+    currentSearchLocation = hotelSearchBox.value;
+  }
+
+  console.log(currentSearchLocation)
+
+  try {
     hotelSearchBox.blur();
 
     putPageIntoLoadingState();
 
     await simulateNetworkCall();
 
-    var regionDetails = await getRegionDetailsByLocationName(locationName);
+    var regionDetails = await getRegionDetailsByLocationName(currentSearchLocation);
 
     var regionImageSearchString = `${regionDetails.name}`;
     var [hotels, weatherWidgets, regionImage] = await Promise.all(
@@ -786,11 +795,11 @@ function createMapContainer() {
 function putPageIntoLoadingState() {
   showElement(loadingSpinnerContainer);
   hideElement(hotelSearchIcon);
-  hideElement(hotelsToolbarContainer);
   // hideElement(hotelsHeaderContainer);
   // hideElement(hotelsBodyContainer);
   // hideElement(mapContainer);
 
+  makeFaint(hotelsToolbarContainer);
   makeFaint(hotelsHeaderContainer);
   makeFaint(hotelsBodyContainer);
   hotelSearchButton.disabled = true;
@@ -802,6 +811,7 @@ function takePageOutOfLoadingState(success = true) {
   hideElement(loadingSpinnerContainer);
   showElement(hotelSearchIcon);
   hotelSearchButton.disabled = false;
+  makeNotFaint(hotelsToolbarContainer)
   makeNotFaint(hotelsHeaderContainer);
   makeNotFaint(hotelsBodyContainer);
   loading = false;
@@ -948,7 +958,7 @@ function getRandomInt(min, max) {
 
 $(hotelSearchForm).on('submit', function (event) {
   event.preventDefault();
-  searchLocationForHotels();
+  searchLocationForHotels({searchType: 'search'});
 });
 
 $(".dropdown-item").on("click", function (event) {
@@ -957,7 +967,7 @@ $(".dropdown-item").on("click", function (event) {
   // Update sortOrder when an item is clicked
   sortOrder = $(this).data("index");
 
-  searchLocationForHotels({ sortOrder });
+  searchLocationForHotels({ sortOrder, searchType: 'filter' });
 });
 
 window.addEventListener('load', function () {
@@ -1587,6 +1597,7 @@ document.getElementById('homeLink').addEventListener('click', function() {
 });
 
 function clearSearchResults() {
+  currentSearchLocation = undefined;
   hideSearchResults();
   undockJumbotron();
 }
