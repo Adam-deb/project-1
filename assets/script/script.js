@@ -24,7 +24,7 @@ var hotelsHeaderDetails = document.getElementById('hotels-header-details');
 
 var hotelsWidgetsContainer = document.getElementById('hotels-widgets-container');
 
-var apiKey = '37a742acecmshb1d0cea778ef597p1c03a8jsn8195f29d98b6';
+var apiKey = '3b7528a7d9msh7b3890b03ac5fa0p1b4094jsnecb6de0ea8d7';
 var apiHost = 'hotels-com-provider.p.rapidapi.com';
 
 var corsProxyURLPrefix = 'https://corsproxy.io/?';
